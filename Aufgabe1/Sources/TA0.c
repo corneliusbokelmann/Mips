@@ -18,7 +18,7 @@
 const static UInt muster_1[2] = {HIGH | TICK(200), LOW | TICK(50), 0};
 const static UInt muster_2[2] = {HIGH | TICK(75), LOW | TICK(75), 0};
 const static UInt muster_3[2] = {HIGH | TICK(25), LOW | TICK(25), 0};
-const static UInt muster_4[2] = {HIGH | TICK(50), LOW | TICK(200)};
+const static UInt muster_4[2] = {HIGH | TICK(50), LOW | TICK(200), 0};
 const static UInt muster_5[4] = {HIGH | TICK(50), LOW | TICK(50), HIGH | TICK(50), LOW | TICK(200), 0};
 const static UInt muster_6[6] = {HIGH | TICK(50), LOW | TICK(50), HIGH | TICK(50), LOW | TICK(50), HIGH | TICK(50), LOW | TICK(200), 0};
 
@@ -37,12 +37,15 @@ GLOBAL Void set_blink_muster(UInt arg) {
  * Diese Lösung hängt stark von der gewählten
  * Datenstruktur ab.
  */
-    
+
     current_pattern_idx = arg;
 }
 
 #pragma FUNC_ALWAYS_INLINE(TA0_init)
 GLOBAL Void TA0_init(Void) {
+
+   ptr = &muster[0][0];
+   current_pattern_idx = 0;
 
    CLRBIT(TA0CTL, MC0 | MC1   // stop mode
                   | TAIE      // disable interrupt
@@ -67,22 +70,22 @@ __interrupt Void TIMER0_A1_ISR(Void) {
    /*
     * Der Inhalt der ISR ist zu implementieren
     */
-    
+
     UInt cnt = *ptr++;
-    
-    Int pattern[size[current_pattern_idx]] = muster[current_pattern_idx]
-    
+
+    UInt* pattern = muster[current_pattern_idx];
+
     if(TSTBIT(cnt, HIGH)) {
         SETBIT(P2OUT, BIT7);
     } else {
         CLRBIT(P2OUT, BIT7);
     }
-    
+
     CLRBIT(TA0CTL, TAIFG);
     TA0CCR0 = ~HIGH BAND cnt;
-    
+
     if(*ptr EQ 0) {
-        ptr = pattern[0];
+        ptr = pattern;
     }
-       
+
 }
