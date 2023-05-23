@@ -11,6 +11,6 @@
 #define MUSTER6 5
 
 EXTERN Void TA0_init(Void);
-EXTERN Void set_blink_muster(UInt);
+EXTERN Void set_blink_muster(UChar);
 
 #endif /* TA0_H_ */

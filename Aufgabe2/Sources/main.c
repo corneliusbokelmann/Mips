@@ -46,13 +46,14 @@ LOCAL Void GPIO_init(Void) {
 
    //                   Port2       Port1
    //               Bit 76543210    76543210
-   PAOUT  = VAL_16BIT(0b00000000, 0b00000000); // clear all outputs
-   PADIR  = VAL_16BIT(0b10000000, 0b00000100); // direction, set outputs
-   PAIFG  = VAL_16BIT(0b00000000, 0b00000000); // clear all interrupt flags
-   PAIE   = VAL_16BIT(0b00000000, 0b00000000); // disable all GPIO interrupts
-   PASEL0 = VAL_16BIT(0b00000000, 0b00000000);
-   PASEL1 = VAL_16BIT(0b00000000, 0b00000000);
-   PAREN  = VAL_16BIT(0b00000000, 0b00000000); // without pull up
+    PAOUT  = VAL_16BIT(0b00000000, 0b00000000); // clear all outputs
+    PADIR  = VAL_16BIT(0b00001000, 0b00000100); // direction, set outputs
+    PAIFG  = VAL_16BIT(0b00000000, 0b00000000); // clear all interrupt flags
+    PAIE   = VAL_16BIT(0b00000000, 0b00000000); // disable all GPIO interrupts
+    PASEL0 = VAL_16BIT(0b00000000, 0b00000000);
+    PASEL1 = VAL_16BIT(0b01110000, 0b00000000);
+    PAREN  = VAL_16BIT(0b00000000, 0b00000000); // without pull up
+
 
    //                   Port4       Port3
    //               Bit 76543210    76543210
@@ -77,20 +78,10 @@ GLOBAL Void main(Void) {
 
    while(TRUE) {
       Event_wait();
-
-      if (Event_tst(EVENT_BTN2)) {
-         Event_clr(EVENT_BTN2);
-         if (++cnt GT MUSTER6) {
-            cnt = MUSTER1;
-         }
-         set_blink_muster(cnt);
-      }
-      if (Event_tst(EVENT_BTN1)) {
-         Event_clr(EVENT_BTN1);
-         TGLBIT(P2OUT, BIT7);
-      }
+      //Handler soll hier hin
+      Handler();
       if (Event_err()) {
-         SETBIT(P1OUT, BIT2); // LED on
+          SETBIT(P1OUT, BIT2); // LED on
       }
    }
 }

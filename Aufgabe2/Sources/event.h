@@ -26,6 +26,14 @@ typedef unsigned int TEvent;
 
 #define EVENT_BTN1  EVENT_1  // click on button 1
 #define EVENT_BTN2  EVENT_2  // click on button 2
+#define EVENT_BTN3  EVENT_3  // click on button 3
+#define EVENT_BTN4  EVENT_4  // click on button 4
+#define EVENT_BTN5  EVENT_5  // click on button 5
+#define EVENT_BTN6  EVENT_6  // click on button 6
+#define EVENT_DIGI  EVENT_7  // update digital
+#define EVENT_7LED  EVENT_8  // update LEDs
+#define EVENT_DONE  EVENT_9  // SPI transfer ist fertig
+#define EVENT_RUN   EVENT_10 // SPI transfer ist fertig
 
 EXTERN Void Event_init(Void);
 EXTERN Void Event_wait(Void);
