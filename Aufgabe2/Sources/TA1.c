@@ -61,7 +61,7 @@ __interrupt Void TIMER1_A1_ISR(Void)
     {
         currentButton->count--;
     }
-    if (!state_1)
+    if (!currentButton->state)
     {
         if (currentButton->count EQ THRSH)
         {
