@@ -5,16 +5,16 @@
 #include <stdio.h>
 #define THRSH 4
 
-UInt count_1 = 0;
-UInt state_1 = 0;
+UInt count = 0;
+UInt state = 0;
 
 
-// TODO: Datenstruktur für buttons mit passenden Events. evtl. mit passenden Events
+// TODO: Datenstruktur fÃ¼r buttons mit passenden Events. evtl. mit passenden Events
 typedef struct B {
     const UInt *port;
     const UInt mask;
-    UInt state_1;
-    UInt count_1;
+    UInt state;
+    UInt count;
 } Button;
 
 static UInt current_button_index = 0;
@@ -52,29 +52,29 @@ GLOBAL Void TA1_init(Void)
 __interrupt Void TIMER1_A1_ISR(Void)
 {
     Button *currentButton = &buttons[current_button_index];
-    // umbauen für datenstruktur
-    if (TSTBIT(*currentButton->port, currentButton->mask) && count_1 LT 5)
+    // umbauen fÃ¼r datenstruktur
+    if (TSTBIT(*currentButton->port, currentButton->mask) && currentButton->count LT 5)
     {
-        count_1++;
+        currentButton->count++;
     }
-    else if (count_1 GT 0)
+    else if (currentButton->count GT 0)
     {
-        count_1--;
+        currentButton->count--;
     }
     if (!state_1)
     {
-        if (count_1 EQ THRSH)
+        if (currentButton->count EQ THRSH)
         {
-            state_1 = 1;
+            currentButton->state = 1;
             // send button event
             Event_set(EVENT_BTN1  << current_button_index); // set up event
         }
     }
     else
     {
-        if (count_1 EQ 0)
+        if (currentButton->count EQ 0)
         {
-            state_1 = 0;
+            currentButton->state = 0;
         }
     }
     current_button_index += 1;
