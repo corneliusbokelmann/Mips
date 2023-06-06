@@ -3,6 +3,8 @@
 #include "event.h"
 #include "TA0.h"
 #include "TA1.h"
+#include "Handler.h"
+#include "UCA1.h"
 
 GLOBAL Int _system_pre_init(Void) {
    // stop watchdog timer
@@ -43,46 +45,52 @@ LOCAL Void GPIO_init(Void) {
    // Port 1: Pin 2 => output, LED2
    // Port 1: Pin 0 => input,  BTN1
    // Port 1: Pin 1 => input,  BTN2
+    // Port 1: Pin 2 => output, LED2, idle Low
+    // Port 2: Pin 3 => output, SPI.CS, idle High
+    // Port 2: Pin 4, 5 and 6 => SPI
 
-   //                   Port2       Port1
-   //               Bit 76543210    76543210
+    //                   Port2       Port1
+    //               Bit 76543210    76543210
     PAOUT  = VAL_16BIT(0b00000000, 0b00000000); // clear all outputs
-    PADIR  = VAL_16BIT(0b00001000, 0b00000100); // direction, set outputs
+    PADIR  = VAL_16BIT(0b10001000, 0b00000100); // direction, set outputs
     PAIFG  = VAL_16BIT(0b00000000, 0b00000000); // clear all interrupt flags
     PAIE   = VAL_16BIT(0b00000000, 0b00000000); // disable all GPIO interrupts
     PASEL0 = VAL_16BIT(0b00000000, 0b00000000);
     PASEL1 = VAL_16BIT(0b01110000, 0b00000000);
     PAREN  = VAL_16BIT(0b00000000, 0b00000000); // without pull up
 
-
-   //                   Port4       Port3
-   //               Bit 76543210    76543210
-   PBOUT  = VAL_16BIT(0b00000000, 0b00000000); // clear all outputs
-   PBDIR  = VAL_16BIT(0b00000000, 0b00000000); // direction, set outputs
-   PBIFG  = VAL_16BIT(0b00000000, 0b00000000); // clear all interrupt flags
-   PBIE   = VAL_16BIT(0b00000000, 0b00000000); // disable all GPIO interrupts
-   PBSEL0 = VAL_16BIT(0b00000000, 0b00000000);
-   PBSEL1 = VAL_16BIT(0b00000000, 0b00000000);
-   PBREN  = VAL_16BIT(0b00000000, 0b00000000); // without pull up
+    //                   Port4       Port3
+    //               Bit 76543210    76543210
+    PBOUT  = VAL_16BIT(0b00000000, 0b00000000); // clear all outputs
+    PBDIR  = VAL_16BIT(0b00000000, 0b00000000); // direction, set outputs
+    PBIFG  = VAL_16BIT(0b00000000, 0b00000000); // clear all interrupt flags
+    PBIE   = VAL_16BIT(0b00000000, 0b00000000); // disable all GPIO interrupts
+    PBSEL0 = VAL_16BIT(0b00000000, 0b00000000);
+    PBSEL1 = VAL_16BIT(0b00000000, 0b00000000);
+    PBREN  = VAL_16BIT(0b00000000, 0b00000000); // without pull up
 
 }
 
-GLOBAL Void main(Void) {
-   Int cnt = MUSTER1;
+ GLOBAL Void main(Void) {
 
    CS_init();     // set up Clock System
    GPIO_init();   // set up Ports
    Event_init();
    TA0_init();    // set up Timer A0
    TA1_init();    // set up Timer A1
+  // ------- inits aufgabe 2 --------------
+   UCA1_init();
+   Handler_init();
 
    while(TRUE) {
       Event_wait();
-      //Handler soll hier hin
-      Handler();
+
+   // -------------- handler aufgabe 2 ---------------
+      Button_Handler();
+      Number_Handler();
+      AS1108_Handler();
       if (Event_err()) {
-          SETBIT(P1OUT, BIT2); // LED on
+         SETBIT(P1OUT, BIT2); // LED on
       }
    }
 }
-
