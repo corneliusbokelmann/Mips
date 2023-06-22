@@ -7,42 +7,29 @@
 #define DIGISIZE 4
 #define BASE     10
 
-
-UChar select;
-signed char digits[DIGISIZE];
+UChar position_index;
+signed char position[DIGISIZE];
 UChar i;
-LOCAL Int cnt;
 // ----------------------------------------------------------------------------
 
 GLOBAL Void Button_Handler(Void) {
 
-    if (Event_tst(EVENT_BTN1)) {
-        Event_clr(EVENT_BTN1);
-        TGLBIT(P2OUT, BIT7);
-    }  else if (Event_tst(EVENT_BTN2)) {
-        Event_clr(EVENT_BTN2);
-        if (++cnt GT MUSTER6) {
-           cnt = MUSTER1;
-        }
-        set_blink_muster(cnt);
-     }
-
-    else if (Event_tst(EVENT_BTN3)) {
+    if (Event_tst(EVENT_BTN3)) {
         Event_clr(EVENT_BTN3);
-        select = 0;
-        Event_set(EVENT_15);
+        position_index = 0;
+        Event_set(EVENT_11);
     } else if (Event_tst(EVENT_BTN4)) {
         Event_clr(EVENT_BTN4);
-        select = 1;
-        Event_set(EVENT_15);
+        position_index = 1;
+        Event_set(EVENT_11);
     } else if (Event_tst(EVENT_BTN5)) {
         Event_clr(EVENT_BTN5);
-        select = 2;
-        Event_set(EVENT_15);
+        position_index = 2;
+        Event_set(EVENT_11);
     } else if (Event_tst(EVENT_BTN6)) {
         Event_clr(EVENT_BTN6);
-        select = 3;
-        Event_set(EVENT_15);
+        position_index = 3;
+        Event_set(EVENT_11);
     }
 }
 
@@ -50,12 +37,12 @@ GLOBAL Void Button_Handler(Void) {
 
 
 GLOBAL Void Number_Handler(Void) {
-    if (Event_tst(EVENT_15)) {
-       Event_clr(EVENT_15);
+    if (Event_tst(EVENT_11)) {
+       Event_clr(EVENT_11);
        if (TSTBIT(P2OUT, BIT7)) {
-           digits[select] -= 1;
+           position[position_index] -= 1;
        } else {
-           digits[select] += 1;
+           position[position_index] += 1;
        }
        Event_set(EVENT_RUN);
    }
@@ -63,14 +50,10 @@ GLOBAL Void Number_Handler(Void) {
 
 // ----------------------------------------------------------------------------
 
-// Datentyp eines Funktionspointers
 typedef Void (* VoidFunc)(Void);
 
-// Funktionsprototypen
 LOCAL Void State0(Void);
 LOCAL Void State1(Void);
-
-// lokale Zustandsvariable
 LOCAL VoidFunc state;
 
 LOCAL Void State0(Void) {
@@ -87,14 +70,14 @@ LOCAL Void State1(Void) {
         Event_clr(EVENT_DONE);
         if (i LE 4) {
             UChar index = i - 1;
-            if (digits[index] > BASE-1) {
-                digits[index] = 0;
-                digits[i]++;
-            } else if (digits[index] < 0) {
-                digits[index] = BASE-1;
-                digits[i]--;
+            if (position[index] > BASE-1) {
+                position[index] = 0;
+                position[i]++;
+            } else if (position[index] < 0) {
+                position[index] = BASE-1;
+                position[i]--;
             }
-            UCA1_emit(i, digits[index]);
+            UCA1_emit(i, position[index]);
             i++;
         } else {
             state = State0;
@@ -108,10 +91,9 @@ GLOBAL Void AS1108_Handler(Void) {
 
 // ----------------------------------------------------------------------------
 GLOBAL Void Handler_init(Void) {
-    cnt = MUSTER1;
-    digits[0] = 0;
-    digits[1] = 0;
-    digits[2] = 0;
-    digits[3] = 0;
+    position[0] = 0;
+    position[1] = 0;
+    position[2] = 0;
+    position[3] = 0;
     state = State0;
 }
